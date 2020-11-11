@@ -19,11 +19,12 @@ class pgDAO:
                                             user=self.dbuser,
                                             password=self.dbpassword,
                                             host=self.dbhost,
-                                            port=self.dbport )
+                                            port=self.dbport,
+                                            connect_timeout = connect_timeout )
 
     def testConnection(self):
         self.cur = self.connection.cursor()
-        self.cur.execute("SELECT * FROM players;")
+        self.cur.execute("SELECT * FROM test;")
         print(self.cur.fetchone())
 
     def closeConnection(self):
