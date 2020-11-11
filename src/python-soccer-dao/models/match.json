@@ -1,0 +1,73 @@
+{
+    "id": 247791,
+    "season": {
+        "id": 290,
+        "startDate": "2018-08-18",
+        "endDate": "2019-05-26",
+        "currentMatchday": 38
+    },
+    "utcDate": "2018-08-18T16:00:00Z",
+    "status": "FINISHED",
+    "matchday": 1,
+    "stage": "REGULAR_SEASON",
+    "group": "Regular Season",
+    "lastUpdated": "2019-03-17T23:33:44Z",
+    "odds": {
+        "msg": "Activate Odds-Package in User-Panel to retrieve odds."
+    },
+    "score": {
+        "winner": "AWAY_TEAM",
+        "duration": "REGULAR",
+        "fullTime": {
+            "homeTeam": 2,
+            "awayTeam": 3
+        },
+        "halfTime": {
+            "homeTeam": 1,
+            "awayTeam": 1
+        },
+        "extraTime": {
+            "homeTeam": null,
+            "awayTeam": null
+        },
+        "penalties": {
+            "homeTeam": null,
+            "awayTeam": null
+        }
+    },
+    "homeTeam": {
+        "id": 106,
+        "name": "AC Chievo Verona"
+    },
+    "awayTeam": {
+        "id": 109,
+        "name": "Juventus FC"
+    },
+    "referees": [
+        {
+            "id": 11021,
+            "name": "Fabrizio Pasqua",
+            "nationality": null
+        },
+        {
+            "id": 11007,
+            "name": "Alessandro Costanzo",
+            "nationality": null
+        },
+        {
+            "id": 11070,
+            "name": "Stefano Liberti",
+            "nationality": null
+        },
+        {
+            "id": 11112,
+            "name": "Juan Sacchi",
+            "nationality": null
+        },
+        {
+            "id": 11057,
+            "name": "Paolo Mazzoleni",
+            "nationality": null
+        }
+    ]
+}
