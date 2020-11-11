@@ -83,14 +83,14 @@ create table team_stats (
 	team_id int,
 	season_id int,
 	position smallint,
-    playedGames smallint,,
+    playedGames smallint,
     won smallint,
     draw smallint,
     lost smallint,
     points smallint,
     goalsFor smallint,
     goalsAgainst smallint,
-    goalDifference: smallint
+    goalDifference smallint,
 	
 	primary key (league_id, team_id, season_id),
 	FOREIGN KEY (team_id) REFERENCES teams(team_id),
@@ -111,7 +111,7 @@ create table player_team (
 
 create table test (
 	test_id int primary key,
-	test_value string
+	test_value varchar
 );
 
 insert into test values(1, 'Test');
