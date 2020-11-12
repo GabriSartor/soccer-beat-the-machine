@@ -2,15 +2,21 @@ import requests
 import click
 from exceptions import APIErrorException
 from datetime import date
+from ratelimit import limits, sleep_and_retry
 
 class RequestHandler(object):
 
+    PERIOD = 60*9
+    CALLS = 10
     BASE_URL = 'http://api.football-data.org/v2/'
     LIVE_URL = 'http://soccer-cli.appspot.com/'
 
     def __init__(self, headers):
         self.headers = headers
+        self.req_count = 0
 
+    @sleep_and_retry
+    @limits(calls=CALLS, period=PERIOD)
     def _get(self, url, params = None):
         """Handles api.football-data.org requests"""
         req = requests.get(RequestHandler.BASE_URL + url, headers=self.headers, params=params)
@@ -47,8 +53,7 @@ class RequestHandler(object):
             if season:
                 params['season'] = season['startDate'][:4]
 
-            http_query = 'competitions/{league_id}/teams?season={season_year}'.format(
-                        league_id=league['id'], season_year=season['startDate'][:4])
+            http_query = 'competitions/{league_id}/teams'.format(league_id=league['id'])
             req = self._get(http_query, params)
             league_teams = req.json()
             if len(league_teams["teams"]) == 0:
@@ -135,3 +140,6 @@ class RequestHandler(object):
         except APIErrorException as e:
             click.secho(e.args[0],
                         fg="red", bold=True)
+
+    def reset_req_count(self):
+        self.req_count = 0

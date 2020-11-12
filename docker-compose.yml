@@ -1,10 +1,11 @@
 version: '3'
 services:
   python-soccer-data:
-    build: ./src/python-soccer-data
+    build: ./app/python-soccer-data
     image: python-soccer-data:latest
     volumes:
-      - soccer-data:/usr/data 
+      - soccer-data:/usr/app/data 
+      - ./app/python-soccer-data/config/config.json:/usr/app/config/config.json
 
   soccer-db:
     environment:
@@ -31,14 +32,14 @@ services:
       - ./.docker/scheduler/config.ini:/etc/ofelia/config.ini
 
   python-soccer-dao:
-    build: ./src/python-soccer-dao
+    build: ./app/python-soccer-dao
     image: python-soccer-dao:latest
     depends_on:
       - soccer-db
     networks:
       - soccer-network
     volumes:
-      - soccer-data:/usr/data
+      - soccer-data:/usr/app/data
 
 volumes: 
   soccer-data:
