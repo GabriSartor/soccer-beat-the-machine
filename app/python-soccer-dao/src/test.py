@@ -1,5 +1,4 @@
 import configparser
-
 from pg_dao import pgDAO
 
 config = configparser.ConfigParser()
