@@ -11,65 +11,15 @@ from json_writer import JSonWR
 
 from datetime import date, timedelta
 
-def load_json(file):
-    """Load JSON file at app start"""
-    here = os.path.dirname(os.path.abspath(__file__))
-    with open(os.path.join(here, file)) as jfile:
-        data = json.load(jfile)
-    return data
-
-
-def get_input_key():
-    """Input API key and validate"""
-    click.secho("No API key found!", fg="yellow", bold=True)
-    click.secho("Please visit {} and get an API token.".format(RequestHandler.BASE_URL),
-                fg="yellow",
-                bold=True)
-    while True:
-        confkey = click.prompt(click.style("Enter API key",
-                                           fg="yellow", bold=True))
-        if len(confkey) == 32:  # 32 chars
-            try:
-                int(confkey, 16)  # hexadecimal
-            except ValueError:
-                click.secho("Invalid API key", fg="red", bold=True)
-            else:
-                break
-        else:
-            click.secho("Invalid API key", fg="red", bold=True)
-    return confkey
-
-
-def load_config_key():
-    """Load API key from config file, write if needed"""
-    global api_token
-    try:
-        api_token = os.environ['SOCCER_CLI_API_TOKEN']
-    except KeyError:
-        config = ("./.soccer-cli.ini")
-        with open(config, "r") as cfile:
-            key = cfile.read()
-        if key:
-            api_token = key
-        else:
-            os.remove(config)  # remove 0-byte file
-            click.secho('No API Token detected. '
-                        'Please visit {0} and get an API Token, '
-                        'which will be used by Soccer CLI '
-                        'to get access to the data.'
-                        .format(RequestHandler.BASE_URL), fg="red", bold=True)
-            sys.exit(1)
-    return api_token
-
 
 def main():
     configFile = json.load(open('config/config.json', 'r'))
     if not configFile:
         click.secho("Could not find configFile", fg="red", bold=True)
         exit(-1)
-    print("API Token found.")
     
     apikey = configFile['apiToken']
+    print("API Token found.")
     print(apikey)
     headers = {'X-Auth-Token': apikey}
     print("Fetching today's date ...")
