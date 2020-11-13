@@ -17,8 +17,9 @@ create table teams (
 	area int,
 	name varchar ,
 	short_name varchar ,
-	tla char[3] ,
+	tla varchar ,
 	venue varchar,
+	updated_at date,
 	
 	FOREIGN KEY (area) REFERENCES areas(area_id)
 );
@@ -84,7 +85,8 @@ create table team_stats (
 	season_id int,
 	position smallint,
     playedGames smallint,
-    won smallint,
+    matchday smallint,
+	won smallint,
     draw smallint,
     lost smallint,
     points smallint,

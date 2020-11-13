@@ -5,7 +5,7 @@ services:
     image: python-soccer-data:latest
     volumes:
       - soccer-data:/usr/app/data 
-      - ./app/python-soccer-data/config/config.json:/usr/app/config/config.json
+      - ./app/python-soccer-data/config/config.json:/usr/app/config/soccer_data_config.json
 
   soccer-db:
     environment:
@@ -40,6 +40,7 @@ services:
       - soccer-network
     volumes:
       - soccer-data:/usr/app/data
+      - ./app/python-soccer-dao/config.ini:/usr/app/config/soccer_dao_config.ini
 
 volumes: 
   soccer-data:

@@ -2,7 +2,7 @@ import configparser
 from pg_dao import pgDAO
 
 config = configparser.ConfigParser()
-config.read('./config.ini')
+config.read('../config/soccer_dao_config.ini')
 
 if "POSTGRESQL" in config:
     print("Instantiating PostgreSQL DAO")

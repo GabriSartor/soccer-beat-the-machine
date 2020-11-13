@@ -1,4 +1,7 @@
 from datetime import date
+from entity import Entity
+import json
+
 class Season(Entity):
     """
     Entity model for a soccer season
@@ -13,28 +16,33 @@ class Season(Entity):
     primaryKey = 'season_id'
     table = 'seasons'
 
-    def __init__(self, id, name = None, start_date = None, end_date = None, 
+    def __init__(self, id, start_date = None, end_date = None, 
                 currentMatchday = None, winner = None):
 
-        self.attributes = {primaryKey:id, 'name' : name, 'start_date' : start_date, 'end_date' : end_date, 
-                        'curent_matchday' : curent_matchday, 'winner' : winner}
+        self.attributes = {self.primaryKey:id, 'start_date' : start_date, 'end_date' : end_date, 
+                        'current_matchday' : currentMatchday, 'winner' : winner}
 
     def create(self):
-        super.create(self, self.attributes, self.table, self.primaryKey)
+        return super().create(self.attributes, self.table, self.primaryKey)
+
+    def update(self):
+        return super().update(self.attributes, self.table, self.primaryKey)
+
+    def get_id(self):
+        return self.attributes[self.primaryKey]
 
     @classmethod
-    def fromJson(cls, json):
-        data = json.loads(json)
+    def fromJson(cls, serialized_shit):
+        data = json.loads(serialized_shit)
         if not data['id']:
             return None
         id = data['id']
-        name = data['name']
         start_date = data['startDate']
         end_date = data['endDate']
         curent_matchday = data['currentMatchday']
         winner = data['winner']
 
-        return cls(id, name, start_date, end_date, 
+        return cls(id, start_date, end_date, 
                 curent_matchday, winner)
     
     @classmethod

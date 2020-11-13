@@ -1,4 +1,6 @@
 from datetime import date
+from entity import Entity
+import json
 
 class Player(Entity):
     """
@@ -29,6 +31,12 @@ class Player(Entity):
     def create(self):
         super.create(self, self.attributes, self.table, self.primaryKey)
 
+    def update(self):
+        super.update(self, self.attributes, self.table, self.primaryKey)
+
+    def get_id(self):
+        return self.attributes[self.primaryKey]
+
     @classmethod
     def fromJson(cls, json):
         data = json.loads(json)
@@ -41,7 +49,7 @@ class Player(Entity):
         birth_date = data['dateOfBirth']
         nationality = data['nationality']
         position = data['position']
-        shirtNumber = data['shirt_number']
+        shirt_number = data['shirtNumber']
         updated_at = data['lastUpdated']
 
         return cls(id, name, first_name, last_name, 

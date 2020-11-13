@@ -1,4 +1,6 @@
 from datetime import datetime
+from entity import Entity
+import json
 
 class Match(Entity):
     """
@@ -31,6 +33,12 @@ class Match(Entity):
 
     def create(self):
         super.create(self, self.attributes, self.table, self.primaryKey)
+
+    def update(self):
+        super.update(self, self.attributes, self.table, self.primaryKey)
+
+    def get_id(self):
+        return self.attributes[self.primaryKey]
 
     @classmethod
     def fromJson(cls, json):

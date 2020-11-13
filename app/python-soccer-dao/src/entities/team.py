@@ -1,4 +1,7 @@
 from datetime import date
+from entity import Entity
+import json
+
 class Team(Entity):
     """
     Entity model for a soccer sTeameason
@@ -18,15 +21,21 @@ class Team(Entity):
     def __init__(self, id, area = None, name = None, short_name = None, 
                 tla = None, venue = None, updated_at = None):
 
-        self.attributes = {primaryKey:id, 'area' : area, 'name' : name, 'short_name' : short_name, 
+        self.attributes = {self.primaryKey :id, 'area' : area, 'name' : name, 'short_name' : short_name, 
                         'tla' : tla, 'venue' : venue, 'updated_at' : updated_at}
 
     def create(self):
-        super.create(self, self.attributes, self.table, self.primaryKey)
+        return super().create(self.attributes, self.table, self.primaryKey)
+
+    def update(self):
+        return super().update(self.attributes, self.table, self.primaryKey)
+
+    def get_id(self):
+        return self.attributes[self.primaryKey]
 
     @classmethod
-    def fromJson(cls, json):
-        data = json.loads(json)
+    def fromJson(cls, serialized):
+        data = json.loads(serialized)
         if not data['id']:
             return None
         id = data['id']

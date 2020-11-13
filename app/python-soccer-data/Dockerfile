@@ -4,10 +4,6 @@ FROM python:3.8
 COPY requirements.txt ./
 RUN pip3 install -r requirements.txt
 WORKDIR /usr/app/src
-COPY src/* ./src/
+COPY src/* ./
 
-
-
-
-
-CMD [ "python", "src/init.py" ]
+CMD [ "python", "init.py" ]
