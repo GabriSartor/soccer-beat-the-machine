@@ -1,31 +1,39 @@
 class Entity(object):
 
-    def create(attributes, table, primaryKey):
+    def create(self, attributes, table, primaryKey):
         query = ''
-        attribute_list = ['='.join([str(key), str(value)]) for (key,value) in attributes.items()]
+        column_list = ["{}{}{}".format('"', key, '"') for (key,value) in attributes.items()]
+        column_string = ','.join(column_list)
+        attribute_list = ["{}{}{}".format("'", str(value).replace("'", " "), "'") for (key,value) in attributes.items()]
         attribute_string = ','.join(attribute_list)
-        query = "INSERT INTO {table} VALUES ({string});".format(table, attribute_string)
+        attribute_string = attribute_string.replace("'None'", "NULL")
+        query = "INSERT INTO {table} ({columns}) VALUES ({attributes});".format(table = table, columns = column_string, attributes = attribute_string)
         return query
 
-    def createMany(attributesList, table, primaryKey):
+    def createMany(self, attributesList, table, primaryKey):
         query = ''
         for attributes in attributesList:
-            attribute_list = ['='.join([str(key), str(value)]) for (key,value) in attributes.items()]
+            column_list = ["{}{}{}".format('"', key, '"') for (key,value) in attributes.items()]
+            column_string = ','.join(column_list)
+            attribute_list = ["{}{}{}".format("'", str(value).replace("'", " "), "'") for (key,value) in attributes.items()]
             attribute_string = ','.join(attribute_list)
-            query += "INSERT INTO {table} VALUES ({string});".format(table, attribute_string)
+            attribute_string = attribute_string.replace("'None'", "NULL")
+            query += "INSERT INTO {table} ({columns}) VALUES ({attributes});".format(table = table, columns = column_string, attributes = attribute_string)
         return query
 
-    def update(attributes, table, primaryKey):
+    def update(self, attributes, table, primaryKey):
         query = ''
-        attribute_list = ['='.join([str(key), str(value)]) for (key,value) in attribute.items()]
+        attribute_list = ['='.join(["{}{}{}".format('"', key, '"'), "{}{}{}".format("'", str(value).replace("'", " "), "'")]) for (key,value) in attributes.items() if key != primaryKey]
         attribute_string = ','.join(attribute_list)
-        query = "UPDATE {table} SET {string} WHERE {id_name}={id_value};".format(table, attribute_string, self.primaryKey, attributes[self.primaryKey])
+        attribute_string = attribute_string.replace("'None'", "NULL")
+        query = "UPDATE {} SET {} WHERE {}={};".format(table, attribute_string, primaryKey, attributes[primaryKey])
         return query
 
-    def updateMany(attributesList, table, primaryKey):
+    def updateMany(self, attributesList, table, primaryKey):
         query = ''
         for attributes in attributesList:
-            attribute_list = ['='.join([str(key), str(value)]) for (key,value) in attributes.items()]
+            attribute_list = ['='.join(["{}{}{}".format('"', key, '"'), "{}{}{}".format("'", str(value).replace("'", " "), "'")]) for (key,value) in attributes.items() if key != primaryKey]
             attribute_string = ','.join(attribute_list)
-            query += "UPDATE {table} SET {string} WHERE {id_name}={id_value};".format(table, attribute_string, self.primaryKey, attributes[self.primaryKey])
+            attribute_string = attribute_string.replace("'None'", "NULL")
+            query += "UPDATE {} SET {} WHERE {}={};".format(table, attribute_string, primaryKey, attributes[primaryKey])
         return query

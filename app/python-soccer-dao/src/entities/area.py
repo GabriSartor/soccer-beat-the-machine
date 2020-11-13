@@ -1,3 +1,5 @@
+from entity import Entity
+import json
 
 class Area(Entity):
     """
@@ -10,14 +12,20 @@ class Area(Entity):
     table = 'areas'
     
     def __init__(self, id, name = None):
-        self.attribute = {primaryKey:id, 'name': name}
+        self.attributes = {self.primaryKey:id, 'name': name}
 
     def create(self):
-        super.create(self, self.attributes, self.table, self.primaryKey)
+        return super().create(self.attributes, self.table, self.primaryKey)
+
+    def update(self):
+        return super().update(self.attributes, self.table, self.primaryKey)
+
+    def get_id(self):
+        return self.attributes[self.primaryKey]
 
     @classmethod
-    def fromJson(cls, json):
-        data = json.loads(json)
+    def fromJson(cls, serialized_shit):
+        data = json.loads(serialized_shit)
         if not data['id']:
             return None
         id = data['id']

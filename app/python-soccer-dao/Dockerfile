@@ -4,8 +4,8 @@ RUN apk update && apk add postgresql-dev gcc python3-dev musl-dev
 
 COPY requirements.txt ./
 RUN pip install -r requirements.txt
+WORKDIR /usr/app/src
+COPY src/* ./
 
-COPY . .
-
-CMD ["python", "src/test.py"]
+CMD ["python", "init.py"]
 #CMD ["python", "src/init.py"]

@@ -19,7 +19,7 @@ def tree_printer(root):
             print(os.path.join(root, f))
 
 def main():
-    configFile = json.load(open('../config/config.json', 'r'))
+    configFile = json.load(open('../config/soccer_data_config.json', 'r'))
     if not configFile:
         click.secho("Could not find configFile", fg="red", bold=True)
         exit(-1)
@@ -37,7 +37,7 @@ def main():
         #NEED TO MAKE IT A THREAD
         rh = RequestHandler(headers)
         print("Instatiating json Writer and reader")
-        js = JSonWR()
+        js = JSonWR('../data/init')
         
         for competition in configFile['competitions']:
             print("Trying to fetch information on {}".format(competition['Name']))
@@ -46,7 +46,7 @@ def main():
                 click.secho("League: {} with ID: {} NOT FOUND".format(competition['Name'], competition['ID']), fg="red", bold=True)
                 break
 
-            js.save_json(league, ['league', league['id']] )
+            js.save_json(league, ['league', str(league['id'])] )
 
             season = league['seasons'][0]
 
@@ -55,7 +55,7 @@ def main():
             if standings:
                 print("Standings fetched for Matchday {}".format(standings['season']['currentMatchday']))
                 js.save_json(standings, ['league', 
-                                    league['name'], 
+                                    str(league['id']), 
                                     'season', 
                                     season['startDate'][:4],
                                     'standings', 
@@ -66,7 +66,7 @@ def main():
             if teams:
                 print("Teams fetched for Season {}".format(standings['season']['startDate']))
                 js.save_json(teams, ['league', 
-                                    league['name'], 
+                                    str(league['id']), 
                                     'season', 
                                     season['startDate'][:4],
                                     'teams'] )
@@ -77,7 +77,7 @@ def main():
             if matches:
                 print("Matches fetched: {} {}".format(len(matches['matches']), matches['count']))
                 js.save_json(matches, ['league', 
-                                        league['name'], 
+                                        str(league['id']), 
                                         'season', 
                                         season['startDate'][:4],
                                         'matches'] )   

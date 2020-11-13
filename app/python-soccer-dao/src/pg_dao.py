@@ -31,13 +31,29 @@ class pgDAO:
         if self.connection:
             self.connection.close()
 
+    def executeQuery(self, query):
+        if not self.connection:
+            return False
+        cur = self.connection.cursor()
+        cur.execute(query)
+        self.connection.commit()
+        cur.close()
+        return True
+
     def executeAsync(self):
         if not self.connection:
             return False
-        self.cur = self.connection.cursor()
+        cur = self.connection.cursor()
         if self.async_queries:
             cur.execute(self.async_queries)
-            cur.commit()
+            self.connection.commit()
             cur.close()
+            self.async_queries = ''
             return True
         return False
+
+    def scheduleAsyncQuery(self, query):
+        self.async_queries += query
+        
+    def clearAsyncQuery(self, query):
+        self.async_queries = ''
