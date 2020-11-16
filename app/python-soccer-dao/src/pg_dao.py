@@ -57,3 +57,9 @@ class pgDAO:
         
     def clearAsyncQuery(self, query):
         self.async_queries = ''
+
+    def statsViewGenerate(self, string):
+        try:
+            self.executeQuery(string)
+        except:
+            print("Errore nella creazione della view di statistiche")

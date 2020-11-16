@@ -79,20 +79,10 @@ create table matches (
 	FOREIGN KEY (season) REFERENCES seasons(season_id)
 );
 
-create table team_stats (
+create table team_league (
 	league_id int,
 	team_id int,
 	season_id int,
-	position smallint,
-    playedGames smallint,
-    matchday smallint,
-	won smallint,
-    draw smallint,
-    lost smallint,
-    points smallint,
-    goalsFor smallint,
-    goalsAgainst smallint,
-    goalDifference smallint,
 	
 	primary key (league_id, team_id, season_id),
 	FOREIGN KEY (team_id) REFERENCES teams(team_id),

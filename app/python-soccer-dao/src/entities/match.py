@@ -25,24 +25,26 @@ class Match(Entity):
 
     def __init__(self, id, season = None, utc_date = None, matchday = None, 
                 stage = None, competition_group = None, home_team = None, away_team = None, updated_at = None,
-                match_status = None, home_team_goals = None, away_team_goals = None):
+                match_status = None, home_team_goals = None, away_team_goals = None, winner = None):
 
-        self.attributes = {primaryKey:id, 'season' : season, 'utc_date' : utc_date, 'matchday' : matchday, 
+        self.attributes = {self.primaryKey:id, 'season' : season, 'utc_date' : utc_date, 'matchday' : matchday, 
                         'stage' : stage, 'competition_group' : competition_group, 'home_team' : home_team, 'away_team' : away_team, 'updated_at' : None,
-                        'match_status' : match_status, 'home_team_goals' : home_team_goals, 'away_team_goals' : away_team_goals}
+                        'status' : match_status, 'home_team_goals' : home_team_goals, 'away_team_goals' : away_team_goals , 'winner': winner}
 
     def create(self):
-        super.create(self, self.attributes, self.table, self.primaryKey)
+        self.attributes['updated_at'] = datetime.utcnow().strftime('%Y-%m-%d, %H:%M:%S');
+        return super().create(self.attributes, self.table, self.primaryKey)
 
     def update(self):
-        super.update(self, self.attributes, self.table, self.primaryKey)
+        self.attributes['updated_at'] = datetime.utcnow().strftime('%Y-%m-%d, %H:%M:%S');
+        return super().update(self.attributes, self.table, self.primaryKey)
 
     def get_id(self):
         return self.attributes[self.primaryKey]
 
     @classmethod
-    def fromJson(cls, json):
-        data = json.loads(json)
+    def fromJson(cls, serializeds):
+        data = json.loads(serializeds)
         if not data['id']:
             return None
         id = data['id']
@@ -57,10 +59,19 @@ class Match(Entity):
         match_status = data['status']
         home_team_goals = data['score']['fullTime']['homeTeam']
         away_team_goals = data['score']['fullTime']['awayTeam']
+        if home_team_goals is not None and away_team_goals is not None:
+            if (home_team_goals > away_team_goals):
+                winner = 'HOME' 
+            elif (home_team_goals < away_team_goals):
+                winner = 'AWAY'
+            else:
+                winner = 'TIE'
+        else:
+            winner = None
 
         return cls(id, season, utc_date, matchday, 
                 stage, competition_group, home_team, away_team, updated_at,
-                match_status, home_team_goals, away_team_goals)
+                match_status, home_team_goals, away_team_goals, winner)
     
     @classmethod
     def fromCsv(cls, data):
