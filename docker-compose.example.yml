@@ -17,8 +17,8 @@ services:
 
   soccer-db:
     environment:
-      POSTGRES_USER: coveto-soccer
-      POSTGRES_PASSWORD: secret
+      POSTGRES_USER: soccer-user
+      POSTGRES_PASSWORD: super-secret-password
       POSTGRES_DB: soccer
     image: postgres:latest
     networks:

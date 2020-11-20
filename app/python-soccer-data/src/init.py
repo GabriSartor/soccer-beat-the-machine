@@ -19,7 +19,8 @@ def tree_printer(root):
             print(os.path.join(root, f))
 
 def main():
-    configFile = json.load(open('../config/soccer_data_config.json', 'r'))
+    #configFile = json.load(open('../config/soccer_data_config.json', 'r'))
+    configFile = json.load(open('../config/config.json', 'r'))
     if not configFile:
         click.secho("Could not find configFile", fg="red", bold=True)
         exit(-1)
@@ -34,55 +35,50 @@ def main():
     print("Today is: {}".format(today.strftime("%Y-%m-%d")))
     try:
         print("Instatiating request handler")
-        #NEED TO MAKE IT A THREAD
         rh = RequestHandler(headers)
         print("Instatiating json Writer and reader")
         js = JSonWR('../data/init')
+        jsJOB = JSonWR('../data/updates')
         
         for competition in configFile['competitions']:
             print("Trying to fetch information on {}".format(competition['Name']))
             league = rh.get_league(competition['ID'])
             if not league:
                 click.secho("League: {} with ID: {} NOT FOUND".format(competition['Name'], competition['ID']), fg="red", bold=True)
-                break
+                continue
 
             js.save_json(league, ['league', str(league['id'])] )
+            jsJOB.save_json(league, ['league', str(league['id'])])
 
-            season = league['seasons'][0]
-
-            standings = rh.get_standings(league, season = season)
-            teams = rh.get_teams_in_league(league, season = season)
-            if standings:
-                print("Standings fetched for Matchday {}".format(standings['season']['currentMatchday']))
-                js.save_json(standings, ['league', 
-                                    str(league['id']), 
-                                    'season', 
-                                    season['startDate'][:4],
-                                    'standings', 
-                                    str(standings['season']['currentMatchday'])] )
-            else:
-                click.secho("NO Standings for this league: {}".format(competition['Name']), fg="red", bold=True)
-            
-            if teams:
-                print("Teams fetched for Season {}".format(standings['season']['startDate']))
-                js.save_json(teams, ['league', 
-                                    str(league['id']), 
-                                    'season', 
-                                    season['startDate'][:4],
-                                    'teams'] )
-            else:
-                click.secho("NO Teams for this league: {}".format(competition['Name']), fg="red", bold=True) 
-
-            matches = rh.get_league_scores(league, season = season)
-            if matches:
-                print("Matches fetched: {} {}".format(len(matches['matches']), matches['count']))
-                js.save_json(matches, ['league', 
+            seasons = league['seasons'][:competition['seasons']]
+            for season in seasons:
+                teams = None
+                if not os.path.isfile('../data/init/league_{}_season_{}_matches.json'.format(league['id'], season['startDate'][:4])):
+                    teams = rh.get_teams_in_league(league, season = season)
+                
+                if teams:
+                    print("Teams fetched for Season {}".format(teams['season']['startDate']))
+                    js.save_json(teams, ['league', 
                                         str(league['id']), 
                                         'season', 
                                         season['startDate'][:4],
-                                        'matches'] )   
-            else:
-                click.secho("NO matches for this season", fg="red", bold=True)             
+                                        'teams'] )
+                else:
+                    click.secho("NO NEW Teams for this league in this season: {}".format(competition['Name']), fg="red", bold=True) 
+
+                matches = None
+                if not os.path.isfile('../data/init/league_{}_season_{}_matches.json'.format(league['id'], season['startDate'][:4])):
+                    matches = rh.get_league_scores(league, season = season, matchFilter = competition['matchFilter'])
+                
+                if matches:
+                    print("Matches fetched: {} {}".format(len(matches['matches']), matches['count']))
+                    js.save_json(matches, ['league', 
+                                            str(league['id']), 
+                                            'season', 
+                                            season['startDate'][:4],
+                                            'matches'] )   
+                else:
+                    click.secho("NO NEW matches for this season", fg="red", bold=True)             
                              
         
     except IncorrectParametersException as e:

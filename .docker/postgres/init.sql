@@ -28,10 +28,7 @@ CREATE TABLE seasons (
 	season_id INT primary key,
 	start_date date ,
 	end_date date ,
-	current_matchday smallint ,
-	winner int ,
-	
-	FOREIGN KEY (winner) REFERENCES teams(team_id)
+	current_matchday smallint
 );
 
 CREATE TABLE leagues (
@@ -75,7 +72,7 @@ create table matches (
 	
 	
 	FOREIGN KEY (home_team) REFERENCES teams(team_id),
-	FOREIGN KEY (home_team) REFERENCES teams(team_id),
+	FOREIGN KEY (away_team) REFERENCES teams(team_id),
 	FOREIGN KEY (season) REFERENCES seasons(season_id)
 );
 

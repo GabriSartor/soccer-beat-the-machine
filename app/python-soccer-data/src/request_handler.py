@@ -6,7 +6,7 @@ from ratelimit import limits, sleep_and_retry
 
 class RequestHandler(object):
 
-    PERIOD = 60*9
+    PERIOD = 65
     CALLS = 10
     BASE_URL = 'http://api.football-data.org/v2/'
     LIVE_URL = 'http://soccer-cli.appspot.com/'
@@ -20,6 +20,7 @@ class RequestHandler(object):
     def _get(self, url, params = None):
         """Handles api.football-data.org requests"""
         req = requests.get(RequestHandler.BASE_URL + url, headers=self.headers, params=params)
+        print(req.url)
         status_code = req.status_code
         if status_code == requests.codes.ok:
             return req
@@ -81,11 +82,11 @@ class RequestHandler(object):
                 return
             else:
                 return league_standings
-        except APIErrorException:
+        except APIErrorException as e:
             click.secho(e.args[0],
                             fg="red", bold=True)
 
-    def get_league_scores(self, league, season = None, onlyFinished = False, dateFrom = None, dateTo = None):
+    def get_league_scores(self, league, season = None, onlyFinished = False, dateFrom = None, dateTo = None, matchFilter = None):
         """
         Queries the API and fetches the scores for fixtures
         based upon the league and time parameter
@@ -100,6 +101,8 @@ class RequestHandler(object):
                 params['dateTo'] = dateTo.strftime("%Y-%m-%d")
             if onlyFinished:
                 params['status'] = 'FINISHED'
+            if matchFilter:
+                params['stage'] = matchFilter
             http_query = 'competitions/{id}/matches'.format(id=league['id'])
             req = self._get(http_query, params)
             fixtures_results = req.json()
@@ -107,7 +110,7 @@ class RequestHandler(object):
             if len(fixtures_results["matches"]) == 0:
                 return
             return fixtures_results
-        except APIErrorException:
+        except APIErrorException as e:
             click.secho(e.args[0],
                         fg="red", bold=True)
 
@@ -123,7 +126,7 @@ class RequestHandler(object):
                 return
             else:
                 return team_players
-        except APIErrorException:
+        except APIErrorException as e:
             click.secho(e.args[0],
                         fg="red", bold=True)
 

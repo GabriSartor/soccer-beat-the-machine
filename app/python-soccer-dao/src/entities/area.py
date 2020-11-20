@@ -32,6 +32,10 @@ class Area(Entity):
         name = data['name']
 
         return cls(id, name)
+
+    @classmethod
+    def fromDB(cls, attributes):
+        return cls(attributes[0], attributes[1])
     
     @classmethod
     def fromCsv(cls, data):

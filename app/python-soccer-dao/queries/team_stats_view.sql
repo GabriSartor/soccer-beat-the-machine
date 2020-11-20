@@ -1,4 +1,4 @@
-drop view if exists teams_stats ;
+drop  view if exists teams_stats CASCADE ;
 
 create view teams_stats (team_id, league_id, matchday, season_id, home_goals, away_goals, home_received_goals, away_received_goals, home_w, home_t, home_l, away_w, away_t, away_l)
 as 

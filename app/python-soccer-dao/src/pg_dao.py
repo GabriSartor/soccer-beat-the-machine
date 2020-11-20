@@ -1,7 +1,14 @@
 import configparser
-
+import sys
 import psycopg2
+sys.path.append('entities/')
 
+from league import League
+from area import Area
+from match import Match
+from player import Player
+from season import Season
+from team import Team
 
 class pgDAO:
     def __init__(self):
@@ -45,8 +52,12 @@ class pgDAO:
             return False
         cur = self.connection.cursor()
         if self.async_queries:
-            cur.execute(self.async_queries)
-            self.connection.commit()
+            try:
+                cur.execute(self.async_queries)
+                self.connection.commit()
+            except:
+                print("Errore nella query:")
+                print(self.async_queries.replace(";", ";\n"))
             cur.close()
             self.async_queries = ''
             return True
@@ -63,3 +74,73 @@ class pgDAO:
             self.executeQuery(string)
         except:
             print("Errore nella creazione della view di statistiche")
+
+    def getAllAreas(self):
+        query = "SELECT * FROM areas;"
+        if not self.connection:
+            return False
+        cur = self.connection.cursor()
+        cur.execute(query)
+        self.connection.commit()
+        result = []
+        for record in cur.fetchall():
+            a = Area.fromDB(record)
+            result.append(a)
+        cur.close()
+        return result
+    
+    def getAllTeams(self):
+        query = "SELECT * FROM teams;"
+        if not self.connection:
+            return False
+        cur = self.connection.cursor()
+        cur.execute(query)
+        self.connection.commit()
+        result = []
+        for record in cur.fetchall():
+            a = Area.fromDB(record)
+            result.append(a)
+        cur.close()
+        return result
+    
+    def getAllLeagues(self):
+        query = "SELECT * FROM leagues;"
+        if not self.connection:
+            return False
+        cur = self.connection.cursor()
+        cur.execute(query)
+        self.connection.commit()
+        result = []
+        for record in cur.fetchall():
+            l = League.fromDB(record)
+            result.append(l)
+        cur.close()
+        return result
+    
+    def getAllMatches(self, season_id):
+        query = "SELECT * FROM matches WHERE season = {}".format(season_id)
+        if not self.connection:
+            return False
+        cur = self.connection.cursor()
+        cur.execute(query)
+        self.connection.commit()
+        result = []
+        for record in cur.fetchall():
+            m = Match.fromDB(record)
+            result.append(m)
+        cur.close()
+        return result
+    
+    def getAllSeasons(self):
+        query = "SELECT * FROM seasons"
+        if not self.connection:
+            return False
+        cur = self.connection.cursor()
+        cur.execute(query)
+        self.connection.commit()
+        result = []
+        for record in cur.fetchall():
+            s = Season.fromDB(record)
+            result.append(s)
+        cur.close()
+        return result
