@@ -9,11 +9,17 @@ from request_handler import RequestHandler
 
 from json_writer import JSonWR
 
-from datetime import date, timedelta
-
+from datetime import date, timedelta, datetime
+def tree_printer(root):
+    for root, dirs, files in os.walk(root):
+        for d in dirs:
+            print(os.path.join(root, d))   
+        for f in files:
+            print(os.path.join(root, f))
 
 def main():
-    configFile = json.load(open('config/config.json', 'r'))
+    tree_printer('..')
+    configFile = json.load(open('../config/soccer_data_config.json', 'r'))
     if not configFile:
         click.secho("Could not find configFile", fg="red", bold=True)
         exit(-1)
@@ -27,11 +33,11 @@ def main():
     today = date.today()
     print("Today is: {}".format(today.strftime("%Y-%m-%d")))
     try:
-
         print("Instatiating request handler")
+        #NEED TO MAKE IT A THREAD
         rh = RequestHandler(headers)
         print("Instatiating json Writer and reader")
-        js = JSonWR()
+        js = JSonWR('../data/updates')
         
         for competition in configFile['competitions']:
             print("Trying to fetch information on {}".format(competition['Name']))
@@ -40,60 +46,39 @@ def main():
                 click.secho("League: {} with ID: {} NOT FOUND".format(competition['Name'], competition['ID']), fg="red", bold=True)
                 break
 
-            js.save_json(league, ['league', league['name']] )
-
-            
-            #if first_install:
-            #    for season in seasons:
-            #        teams = rh.get_teams_in_league(league, season)
-            #        standings = rh.get_standings(league, season)
-            #        matches = rh.get_league_scores(league, season)
-            #        js.save_json(teams, ['league', league['name'], 'season', season['startDate'][:4],'teams'] )
-            #        js.save_json(standings, ['league', league['name'], 'season', season['startDate'][:4],'standings'])
-            #        js.save_json(matches, ['league', league['name'], 'season', season['startDate'][:4],'matches'])   
-            #else:
             season = league['seasons'][0]
+            new_season = False
+            last_season_updated = js.open_json(['league', 
+                                        str(league['id'])])['seasons'][0]
+            if season != last_season_updated:
+                new_season = True
+            
+            update_matches = rh.get_league_scores(league, matchFilter = competition['matchFilter'], dateFrom = (today - timedelta(days=1)), dateTo= datetime.strptime(season['endDate'], '%Y-%m-%d'))
 
-            standings = rh.get_standings(league, season = season)
-            if standings:
-                print("Standings fetched for Matchday {}".format(standings['season']['currentMatchday']))
-                js.save_json(standings, ['league', 
-                                    league['name'], 
-                                    'season', 
-                                    season['startDate'][:4],
-                                    'standings', 
-                                    str(standings['season']['currentMatchday'])] )
-            else:
-                click.secho("NO Standings for this league: {}".format(competition['Name']), fg="red", bold=True)           
-
-            new_matches = rh.get_league_scores(league, dateFrom = today, dateTo = (today + timedelta(days=7)))
-            if new_matches:
-                print("New Matches fetched for the next week: {}".format(len(new_matches['matches'])))
-                js.save_json(new_matches, ['league', 
-                                        league['name'], 
+            if new_season:
+                update_teams = rh.get_teams_in_league(league, season = season)
+                if update_teams:
+                    print("New Season update available, teams fetched: ".format(len(update_teams['teams'])))
+                    js.save_json(update_teams, ['league', 
+                                        str(league['id']), 
                                         'season', 
                                         season['startDate'][:4],
-                                        'new_matches',
-                                        today.strftime("%d_%m")] )   
-            else:
-                click.secho("NO new matches for this week", fg="red", bold=True)         
-
-            played_matches = rh.get_league_scores(league, dateFrom = (today - timedelta(days=1)), dateTo = (today - timedelta(days=1)))
-            if played_matches:
-                print("Matches played yesterday: {}".format(len(played_matches['matches'])))
-                js.save_json(played_matches, ['league', 
-                                        league['name'], 
+                                        'updated_teams'])
+            if update_matches:
+                print("New Matches fetched: {}".format(len(update_matches['matches'])))
+                js.save_json(update_matches, ['league', 
+                                        str(league['id']), 
                                         'season', 
                                         season['startDate'][:4],
-                                        'played_matches'],
-                                        today.strftime("%d_%m") )   
+                                        'updated_matches',
+                                        today.strftime("%Y_%m_%d")] )
+                js.save_json(league, ['league', 
+                                        str(league['id'])])
             else:
-                click.secho("NO matches played yesterday", fg="red", bold=True)         
-                             
-        
+                click.secho("NO new matches for this week", fg="red", bold=True)              
+
     except IncorrectParametersException as e:
         click.secho(str(e), fg="red", bold=True)
-
 
 if __name__ == '__main__':
     main()

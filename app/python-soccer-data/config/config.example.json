@@ -6,5 +6,5 @@
         { "ID": 2021 ,"Name":"Premier League", "seasons": 3, "matchFilter":"REGULAR_SEASON"} 
         
     ],
-    "apiToken": "c9790630c83d4a4fa10f70008c28f25c"
+    "apiToken": "yourTOKEN"
 }

@@ -10,7 +10,6 @@ class Season(Entity):
     #start_date - date
     #end_date - date
     #curent_matchday - integer
-    #winner - reference to Team entity
     """
 
     primaryKey = 'season_id'
@@ -20,7 +19,7 @@ class Season(Entity):
                 currentMatchday = None, winner = None):
 
         self.attributes = {self.primaryKey:id, 'start_date' : start_date, 'end_date' : end_date, 
-                        'current_matchday' : currentMatchday, 'winner' : winner}
+                        'current_matchday' : currentMatchday}
 
     def create(self):
         return super().create(self.attributes, self.table, self.primaryKey)
@@ -40,12 +39,15 @@ class Season(Entity):
         start_date = data['startDate']
         end_date = data['endDate']
         curent_matchday = data['currentMatchday']
-        winner = data['winner']
 
         return cls(id, start_date, end_date, 
-                curent_matchday, winner)
+                curent_matchday)
     
     @classmethod
     def fromCsv(cls, data):
         ##Create object from data
         return self
+
+    @classmethod
+    def fromDB(cls, attributes):
+        return cls(attributes[0], attributes[1], attributes[2], attributes[3])

@@ -1,0 +1,72 @@
+version: '3'
+services:
+  python-soccer-data:
+    build: ./app/python-soccer-data
+    command: python init.py
+    image: python-soccer-data:latest
+    volumes:
+      - soccer-data:/usr/app/data 
+
+  python-soccer-data-job:
+    container_name: soccer_data_job
+    build: ./app/python-soccer-data
+    command: tail -f /dev/null
+    image: python-soccer-data:latest
+    volumes:
+      - soccer-data:/usr/app/data 
+
+  soccer-db:
+    environment:
+      POSTGRES_USER: soccer-user
+      POSTGRES_PASSWORD: super-secret-password
+      POSTGRES_DB: soccer
+    image: postgres:latest
+    networks:
+      - soccer-network
+    ports:
+      - 5405:5432
+    restart: always
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./.docker/postgres/init.sql:/docker-entrypoint-initdb.d/1-init.sql
+
+  scheduler:
+    image: mcuadros/ofelia:latest
+    depends_on:
+      - python-soccer-data
+      - python-soccer-dao
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./.docker/scheduler/config.ini:/etc/ofelia/config.ini
+      - soccer-data:/usr/app/data
+
+  python-soccer-dao:
+    build: ./app/python-soccer-dao
+    command: python init.py
+    image: python-soccer-dao:latest
+    depends_on:
+      - soccer-db
+    networks:
+      - soccer-network
+    volumes:
+      - soccer-data:/usr/app/data
+
+  python-soccer-dao-job:
+    container_name: soccer_dao_job
+    build: ./app/python-soccer-dao
+    command: tail -f /dev/null
+    image: python-soccer-dao:latest
+    depends_on:
+      - soccer-db
+    networks:
+      - soccer-network
+    volumes:
+      - soccer-data:/usr/app/data
+
+volumes: 
+  soccer-data:
+
+  postgres-data:
+
+networks: 
+  soccer-network:

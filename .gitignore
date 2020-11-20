@@ -2,8 +2,8 @@
 docker-compose.yml
 
 #APP config
-app/python-soccer-dao/config.ini
-app/python-soccer-data/config/config.json
+config.ini
+config.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
