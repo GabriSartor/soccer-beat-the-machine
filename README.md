@@ -1,5 +1,7 @@
 # Soccer: Beat the machine
  A learning project by Gabriele Sartor to make some practice with different technologies and have sum fun with AI-improved soccer stats
+ 
+## Preface
  The project as a whole has the objective to approach some technologies I'm studying both at uni and by myself and to make some experiment with them.
  The main ideas behind the entire architecture is to use small and easily scalable containerized modules with single responisibility and specific personal learning objectives defined a priori.
  Because of this robustness, security and the use of best practices are not always pursued and framework or industry-standard modules are often avoided in favour of more "academic" exercises and challenges.
@@ -9,6 +11,12 @@
 ## General architecture
  Every module is containerized and volumes, networks, exposed ports and environment variables are managed by docker-compose. 
 
+
+## Quick start
+ - Create a copy of docker-compose.example.yml, rename it docker-compose.yml and choose a name for the database, user and password
+ - Create a copy of app/python-soccer-dao/config/config.example.ini, rename it config.ini and fill it with DB credentials 
+ - Create a copy of app/python-soccer-data/config/config.example.json, rename it config.json and insert your API token and the list of competitions and season to be fetched 
+ - 
 
 ## Soccer Data
  The "Soccer-data" module is a simple Python application that functions as a client for football-data.org APIs.
@@ -34,6 +42,13 @@
     ### MAIN
     The main.py script runs every day at midnight UTC and fetches all the matches played the day before and updates on the occurring ones. Like init.py script it saves data in json files in soccer-data docker volume.
     If a new season started, teams playing in the league in the new season are fecthed as well.
+
+    ### PROBLEMS TO BE ADDRESSED
+    - The rate limit for football-data.org API makes the time needed to fetch data dependent on the number of leagues and seasons. This makes impossible to know when to start running DB queries (see Soccer Dao problems)
+    - Files are not yet deleted from the data folder, which makes it not very robust for a long runtime (size will eventually increase)
+    - More specific documentation and code comments
+    - Lack of input control and exception managament in general (see preface)
+    - Lack of unit tests, every change in the code should be made with extreme caution
 
 ## Soccer Dao
  The "Soccer-dao" module is a Python application that is in charge of managing data on the DB. It also works as an adapter to insert and extract data from the DB in different formats.
@@ -73,6 +88,15 @@
     ### DATASET_GENERATOR
     The dataset_generator.py script is a scheduled job that runs two simple queries. Their role is to create a .csv dataset from aggregated statistics which will be used to train and test ML models.
 
+    ### PROBLEMS TO BE ADDRESSED
+    - The init procedure is launched by docker-compose when containers are started, this was easy and fast to implement but since the script relies on the data fetched by another service they should be coordinated. Possible solutions:
+        - Expose an API from soccer-data to check wheter the fetching is completed, start init process for DB only when a request returns success (microservice architectures should be designed like this)
+        - (ACTUAL, BAD PRACTICE) Application sleeps for some seconds before starting its process
+    - Exception management is very poor, should be improved considering how many are raised from DB connections and operations
+    - More specific documentation and code comments
+    - Lack of complete input control (I'm relying way too much on the correctness of soccer-data output) 
+    - Lack of unit tests, every change in the code should be made with extreme caution
+
 ## Ofelia Scheduler
  The Scheduler model manages scheduled jobs running scripts in other containers. Please refer to https://github.com/mcuadros/ofelia
  Every job is configured in .docker/scheduler/config.ini file, standard Cron syntax is used (seconds included)
@@ -81,3 +105,9 @@
  - FOOTBALL-DATA UPDATE: Every day at 00.00am UTC python-soccer-data/main.py script is run
  - DB-DATA UPDATE: Every day at 1.00am UTC python-soccer-dao/main.py script is run 
  - TRAINING-DATASET UPDATE: On the first day of every month the training_dataset for ml models are updated
+
+### Database
+ The database used is a PostgreSQL instance, dockerized as well as the other services.
+ Configuration is inside the docker-compose file, data are persisted when containers are down thanks to the postgres-data volume.
+ An init file is mounted in the default postgres directory and it will be run only if postgres-data volume is empty.
+ Referential integrity is implemented for each table, indexing is still missing and performance have not yet been measured and optimized.
