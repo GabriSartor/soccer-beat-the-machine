@@ -106,7 +106,7 @@
  - DB-DATA UPDATE: Every day at 1.00am UTC python-soccer-dao/main.py script is run 
  - TRAINING-DATASET UPDATE: On the first day of every month the training_dataset for ml models are updated
 
-### Database
+## Database
  The database used is a PostgreSQL instance, dockerized as well as the other services.
  Configuration is inside the docker-compose file, data are persisted when containers are down thanks to the postgres-data volume.
  An init file is mounted in the default postgres directory and it will be run only if postgres-data volume is empty.
