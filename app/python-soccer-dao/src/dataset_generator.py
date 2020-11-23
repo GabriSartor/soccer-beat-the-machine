@@ -19,7 +19,7 @@ def initPGConn(config):
 
 def main():
     config = configparser.ConfigParser()
-    config.read('../config_no_docker.ini')
+    config.read('../config/config_no_docker.ini')
     #config.read('../config/soccer_dao_config.ini')
     dao = None
     if "POSTGRESQL" in config:
@@ -33,8 +33,8 @@ def main():
         print("There are no postgre options in config.ini")
         return
 
-    ret = dao.saveHomeTrainingSetAsCSV('home_training_set.csv')
-    ret2 = dao.saveAwayTrainingSetAsCSV('away_training_set.csv')
+    ret = dao.saveHomeTrainingSetAsCSV('../data/dataset/home_training_set.csv')
+    ret2 = dao.saveAwayTrainingSetAsCSV('../data/dataset/away_training_set.csv')
     if ret and ret2:
         print("DONE!")
     else:
