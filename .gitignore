@@ -3,6 +3,7 @@ docker-compose.yml
 
 #APP config
 config.ini
+config_no_docker.ini
 config.json
 
 # Byte-compiled / optimized / DLL files
