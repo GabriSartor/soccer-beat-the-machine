@@ -37,7 +37,7 @@ def main():
     time.sleep(60*5)
     #time.sleep(15)
     config = configparser.ConfigParser()
-    config.read('../config/soccer_dao_config.ini')
+    config.read('../config/config.ini')
     dao = None
     if "POSTGRESQL" in config:
         dao = initPGConn(config)    
@@ -200,10 +200,11 @@ def main():
                 else:
                     print("mmmmmmmm")
 
-    with open('team_stats_view.sql', 'r') as sql_file:
+    with open('../queries/team_stats_view.sql', 'r') as sql_file:
         dao.executeQuery(sql_file.read())
 
-    with open('team_standings_view.sql', 'r') as sql_file:
+    with open('../queries/team_standings_view.sql', 'r') as sql_file:
         dao.executeQuery(sql_file.read())            
 
-main()
+if __name__ == '__main__':
+    main()
