@@ -144,3 +144,61 @@ class pgDAO:
             result.append(s)
         cur.close()
         return result
+
+    def getHomeTrainingSet(self):
+        with open('queries/home_training_set.sql', 'r') as sql_file:
+            query = sql_file.read()
+            if not self.connection:
+                return None
+            cur = self.connection.cursor()
+            cur.execute(query)
+            self.connection.commit()
+            result =  cur.fetchall()
+            cur.close()
+            return result
+        return None
+    
+    def getAwayTrainingSet(self):
+        with open('queries/away_training_set.sql', 'r') as sql_file:
+            query = sql_file.read()
+            if not self.connection:
+                return None
+            cur = self.connection.cursor()
+            cur.execute(query)
+            self.connection.commit()
+            result =  cur.fetchall()
+            cur.close()
+            return result
+        return None
+
+    def saveHomeTrainingSetAsCSV(self, fileName):
+        if not self.connection:
+            return False
+        
+        with open('../queries/home_training_set.sql', 'r') as sql_file:
+            query = sql_file.read()
+            cur = self.connection.cursor()
+
+            outputquery = 'copy ({0}) to stdout with csv header'.format(query)
+
+            with open(fileName, 'w') as f:
+                cur.copy_expert(outputquery, f)
+                
+            cur.close()
+            return True
+
+    def saveAwayTrainingSetAsCSV(self, fileName):
+        if not self.connection:
+            return False
+        
+        with open('../queries/away_training_set.sql', 'r') as sql_file:
+            query = sql_file.read()
+            cur = self.connection.cursor()
+
+            outputquery = 'copy ({0}) to stdout with csv header'.format(query)
+
+            with open(fileName, 'w') as f:
+                cur.copy_expert(outputquery, f)
+                
+            cur.close()
+            return True
