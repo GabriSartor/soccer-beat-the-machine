@@ -38,7 +38,6 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./.docker/scheduler/config.ini:/etc/ofelia/config.ini
-      - soccer-data:/usr/app/data
 
   python-soccer-dao:
     build: ./app/python-soccer-dao

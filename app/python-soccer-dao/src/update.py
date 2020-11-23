@@ -28,7 +28,7 @@ def initPGConn(config):
 
 def main():
     config = configparser.ConfigParser()
-    config.read('../config/soccer_dao_config.ini')
+    config.read('../config/config.ini')
     dao = None
     if "POSTGRESQL" in config:
         dao = initPGConn(config)    
@@ -150,4 +150,5 @@ def main():
             else:
                 print("mmmmmmmm")
 
-main()
+if __name__ == '__main__':
+    main()
