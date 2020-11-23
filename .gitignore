@@ -3,8 +3,8 @@ docker-compose.yml
 
 #APP config
 config.ini
-config_no_docker.ini
 config.json
+config_no_docker.ini
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
