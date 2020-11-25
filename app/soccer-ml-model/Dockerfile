@@ -16,4 +16,7 @@ RUN /opt/conda/bin/conda install --yes \
 
 RUN pip install torch
 
-COPY home_training_set.csv set.csv
+
+WORKDIR /usr/app/src
+COPY src/* ./
+COPY data/dataset/home_training_set.csv .
