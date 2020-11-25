@@ -9,5 +9,5 @@ ts2.away_t as team_2_away_t, ts2.away_l as team_2_away_l,
 m.season as match_season, m.matchday as matchday ,
 m.winner as winner, m.home_team_goals as match_home_goals, m.away_team_goals as match_away_goals
 from teams_stats ts1 , teams_stats ts2 , matches m
-where m.home_team = ts1.team_id and m.season = ts1.season_id and m.matchday = ts1.matchday - 1 
-	and m.away_team = ts2.team_id and m.season = ts2.season_id and m.matchday = ts2.matchday -1
+where m.home_team = ts1.team_id and m.season = ts1.season_id and ts1.matchday = m.matchday - 1 
+	and m.away_team = ts2.team_id and m.season = ts2.season_id and ts2.matchday = m.matchday - 1 

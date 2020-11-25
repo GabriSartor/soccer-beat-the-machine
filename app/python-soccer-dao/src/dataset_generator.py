@@ -19,7 +19,7 @@ def initPGConn(config):
 
 def main():
     config = configparser.ConfigParser()
-    config.read('../config/config_no_docker.ini')
+    config.read('../config/config.ini')
     #config.read('../config/soccer_dao_config.ini')
     dao = None
     if "POSTGRESQL" in config:

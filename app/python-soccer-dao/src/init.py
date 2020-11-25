@@ -34,7 +34,7 @@ def initPGConn(config):
 def main():
     #Wait for the data fetcher to ask resources from Football API
     #And for the DB to be up and ready
-    time.sleep(60*5)
+    time.sleep(20)
     #time.sleep(15)
     config = configparser.ConfigParser()
     config.read('../config/config.ini')
