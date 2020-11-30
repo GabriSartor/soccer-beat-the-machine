@@ -1,6 +1,6 @@
-drop  view if exists teams_stats CASCADE ;
+drop materialized view if exists teams_stats CASCADE ;
 
-create view teams_stats (team_id, league_id, matchday, season_id, home_goals, away_goals, home_received_goals, away_received_goals, home_w, home_t, home_l, away_w, away_t, away_l)
+create materialized view teams_stats (team_id, league_id, matchday, season_id, home_goals, away_goals, home_received_goals, away_received_goals, home_w, home_t, home_l, away_w, away_t, away_l)
 as 
 	select t.team_id , l.league_id , m.matchday , m.season , 
 															coalesce((select sum(m2.home_team_goals)

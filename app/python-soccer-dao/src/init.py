@@ -109,9 +109,7 @@ def main():
             for season in dao.getAllSeasons():
                 if not seasons_map.get(season.get_id()):
                     seasons_map[season.get_id()] = season
-
-            dao.executeAsync()
-
+                    
             stats_query = ''
             #Ciclo per ogni stagione (per ora solo la prima)
             for s in deserialized_data['seasons'][:len(competitions_list[league_id])]:
@@ -129,7 +127,6 @@ def main():
                 elif seasons_map.get(season.get_id) != season:
                     dao.scheduleAsyncQuery(season.update())
                     print("Season does exist, running UPDATE query")
-                dao.executeAsync()
 
                 matches_map = {}
                 for match in dao.getAllMatches(season.get_id()):
@@ -163,7 +160,6 @@ def main():
                             stats_query += 'INSERT INTO team_league (league_id, team_id, season_id) VALUES ({}, {}, {});'.format(league.get_id(), team.get_id(), season.get_id())
 
                     print("Found {} new teams and {} old teams".format(new_teams_counter, old_teams_counter))
-                    dao.executeAsync()
 
                 #E i match
                 with open('../data/init/league_{}_season_{}_matches.json'.format(league_id, season.attributes['start_date'][:4]), 'r') as match_file:
@@ -181,30 +177,31 @@ def main():
                             dao.scheduleAsyncQuery(match.update())
 
                     print("Found {} new matches and {} old matches".format(new_matches_counter, old_matches_counter))
-                    dao.executeAsync()
 
             if not league.get_id() in leagues_map:
                 leagues_map[league.get_id()] = league
                 dao.scheduleAsyncQuery(league.create())
+            elif leagues_map.get(league.get_id()) != league:
+                dao.scheduleAsyncQuery(league.update())
 
             print("League found and created-> ID: {} name: {}".format(league.attributes['league_id'], league.attributes['name']))
             print("Now executing queries...")
             if dao.executeAsync():
                 print("Succeded!")
             else:
-                print("mmmmmmmm")
+                print("There's been an error in updating the database")
             if new_season:
                 print("Executing stats queries...")
                 if dao.executeQuery(stats_query):
                     print("Succeded!")
                 else:
-                    print("mmmmmmmm")
+                    print("There's been an error in updating the database")
 
     with open('../queries/team_stats_view.sql', 'r') as sql_file:
         dao.executeQuery(sql_file.read())
 
     with open('../queries/team_standings_view.sql', 'r') as sql_file:
-        dao.executeQuery(sql_file.read())            
+        dao.executeQuery(sql_file.read())
 
 if __name__ == '__main__':
     main()

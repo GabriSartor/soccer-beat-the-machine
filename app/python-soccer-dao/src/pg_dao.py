@@ -1,5 +1,7 @@
 import configparser
 import sys
+import os
+import errno
 import psycopg2
 sys.path.append('entities/')
 
@@ -42,8 +44,12 @@ class pgDAO:
         if not self.connection:
             return False
         cur = self.connection.cursor()
-        cur.execute(query)
-        self.connection.commit()
+        try:
+            cur.execute(query)
+            self.connection.commit()
+        except:
+            print("Errore nella query:")
+            print(query.replace(";", ";\n"))
         cur.close()
         return True
 
@@ -171,9 +177,16 @@ class pgDAO:
             return result
         return None
 
-    def saveHomeTrainingSetAsCSV(self, fileName):
+    def saveHomeTrainingSetAsCSV(self, path):
         if not self.connection:
             return False
+
+        if not os.path.exists(path):
+            try:
+                os.makedirs(path)
+            except OSError as exc: # Guard against race condition
+                if exc.errno != errno.EEXIST:
+                    raise
         
         with open('../queries/home_training_set.sql', 'r') as sql_file:
             query = sql_file.read()
@@ -181,15 +194,22 @@ class pgDAO:
 
             outputquery = 'copy ({0}) to stdout with csv header'.format(query)
 
-            with open(fileName, 'w') as f:
+            with open(path+'/home_training_set.csv', 'w') as f:
                 cur.copy_expert(outputquery, f)
                 
             cur.close()
             return True
 
-    def saveAwayTrainingSetAsCSV(self, fileName):
+    def saveAwayTrainingSetAsCSV(self, path):
         if not self.connection:
             return False
+
+        if not os.path.exists(path):
+            try:
+                os.makedirs(path)
+            except OSError as exc: # Guard against race condition
+                if exc.errno != errno.EEXIST:
+                    raise
         
         with open('../queries/away_training_set.sql', 'r') as sql_file:
             query = sql_file.read()
@@ -197,7 +217,7 @@ class pgDAO:
 
             outputquery = 'copy ({0}) to stdout with csv header'.format(query)
 
-            with open(fileName, 'w') as f:
+            with open(path+'/away_training_set.csv', 'w') as f:
                 cur.copy_expert(outputquery, f)
                 
             cur.close()

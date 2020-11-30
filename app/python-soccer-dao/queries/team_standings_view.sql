@@ -1,6 +1,6 @@
-drop view if exists teams_standings ;
+drop materialized view if exists teams_standings ;
 
-create view teams_standings (team_id, season_id, matchday, league_id, points, goals, received_goals, differenza_reti, position)
+create materialized view teams_standings (team_id, season_id, matchday, league_id, points, goals, received_goals, differenza_reti, position)
 as 
 select team_id, season_id, matchday, league_id, 
 		3*((home_w) + (away_w)) + home_t + away_t as points ,  

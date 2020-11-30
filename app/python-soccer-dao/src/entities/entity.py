@@ -37,3 +37,11 @@ class Entity(object):
             attribute_string = attribute_string.replace("'None'", "NULL")
             query += "UPDATE {} SET {} WHERE {}={};".format(table, attribute_string, primaryKey, attributes[primaryKey])
         return query
+
+    def __eq__(self, other):
+        if (isinstance(other, self.__class__)):
+            for key, value in self.attributes.items():
+                if value != other.attributes[key]:
+                    return False
+            return True
+        return False

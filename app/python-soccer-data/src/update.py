@@ -10,16 +10,9 @@ from request_handler import RequestHandler
 from json_writer import JSonWR
 
 from datetime import date, timedelta, datetime
-def tree_printer(root):
-    for root, dirs, files in os.walk(root):
-        for d in dirs:
-            print(os.path.join(root, d))   
-        for f in files:
-            print(os.path.join(root, f))
 
 def main():
-    tree_printer('..')
-    configFile = json.load(open('../config/soccer_data_config.json', 'r'))
+    configFile = json.load(open('../config/config.json', 'r'))
     if not configFile:
         click.secho("Could not find configFile", fg="red", bold=True)
         exit(-1)

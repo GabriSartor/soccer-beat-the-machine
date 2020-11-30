@@ -33,8 +33,9 @@ def main():
         print("There are no postgre options in config.ini")
         return
 
-    ret = dao.saveHomeTrainingSetAsCSV('../data/dataset/home_training_set.csv')
-    ret2 = dao.saveAwayTrainingSetAsCSV('../data/dataset/away_training_set.csv')
+    
+    ret = dao.saveHomeTrainingSetAsCSV('../data/dataset')
+    ret2 = dao.saveAwayTrainingSetAsCSV('../data/dataset')
     if ret and ret2:
         print("DONE!")
     else:
