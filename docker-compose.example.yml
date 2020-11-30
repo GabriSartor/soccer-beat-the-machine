@@ -1,24 +1,18 @@
 version: '3'
 services:
   python-soccer-data:
+    container_name: soccer-beat-the-machine_python-soccer-data
     build: ./app/python-soccer-data
-    command: python init.py
     image: python-soccer-data:latest
-    volumes:
-      - soccer-data:/usr/app/data 
-
-  python-soccer-data-job:
-    container_name: soccer_data_job
-    build: ./app/python-soccer-data
-    command: tail -f /dev/null
-    image: python-soccer-data:latest
+    environment:
+     - DEV_MODE=1
     volumes:
       - soccer-data:/usr/app/data 
 
   soccer-db:
     environment:
-      POSTGRES_USER: soccer-user
-      POSTGRES_PASSWORD: super-secret-password
+      POSTGRES_USER: coveto-soccer
+      POSTGRES_PASSWORD: secret
       POSTGRES_DB: soccer
     image: postgres:latest
     networks:
@@ -30,6 +24,26 @@ services:
       - postgres-data:/var/lib/postgresql/data
       - ./.docker/postgres/init.sql:/docker-entrypoint-initdb.d/1-init.sql
 
+  python-soccer-dao:
+    container_name: soccer-beat-the-machine_python-soccer-dao
+    build: ./app/python-soccer-dao
+    image: python-soccer-dao:latest
+    environment:
+     - DEV_MODE=1
+    depends_on:
+      - soccer-db
+    networks:
+      - soccer-network
+    volumes:
+      - soccer-data:/usr/app/data
+
+  #python-soccer-torch:
+  #  build: ./app/soccer-ml-model
+  #  command: tail -f /dev/null
+  #  image: python-soccer-torch:latest
+  #  volumes:
+  #    - soccer-data:/usr/app/data
+
   scheduler:
     image: mcuadros/ofelia:latest
     depends_on:
@@ -38,30 +52,6 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./.docker/scheduler/config.ini:/etc/ofelia/config.ini
-      - soccer-data:/usr/app/data
-
-  python-soccer-dao:
-    build: ./app/python-soccer-dao
-    command: python init.py
-    image: python-soccer-dao:latest
-    depends_on:
-      - soccer-db
-    networks:
-      - soccer-network
-    volumes:
-      - soccer-data:/usr/app/data
-
-  python-soccer-dao-job:
-    container_name: soccer_dao_job
-    build: ./app/python-soccer-dao
-    command: tail -f /dev/null
-    image: python-soccer-dao:latest
-    depends_on:
-      - soccer-db
-    networks:
-      - soccer-network
-    volumes:
-      - soccer-data:/usr/app/data
 
 volumes: 
   soccer-data:
